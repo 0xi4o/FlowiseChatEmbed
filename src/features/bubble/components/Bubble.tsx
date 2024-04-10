@@ -1,4 +1,4 @@
-import { createSignal, Show, splitProps, onCleanup } from 'solid-js';
+import { createSignal, Show, splitProps, onCleanup, onMount } from 'solid-js';
 import styles from '../../../assets/index.css';
 import { BubbleButton } from './BubbleButton';
 import { BubbleParams } from '../types';
@@ -14,6 +14,7 @@ export const Bubble = (props: BubbleProps) => {
 
   const [isBotOpened, setIsBotOpened] = createSignal(false);
   const [isBotStarted, setIsBotStarted] = createSignal(false);
+  const [showPopupMessage, setShowPopupMessage] = createSignal(false);
 
   const openBot = () => {
     if (!isBotStarted()) setIsBotStarted(true);
@@ -32,9 +33,23 @@ export const Bubble = (props: BubbleProps) => {
     setIsBotStarted(false);
   });
 
+  onMount(() => {
+    if (bubbleProps.theme?.chatWindow?.popupMessage !== '') {
+      setShowPopupMessage(true);
+    }
+  });
+
+  console.log(showPopupMessage());
+  console.log(bubbleProps?.theme?.chatWindow?.popupMessage);
+
   return (
     <>
       <style>{styles}</style>
+      {bubbleProps.theme?.chatWindow?.popupMessage && showPopupMessage() && (
+        <div style={{ width: '240px', display: 'flex', 'align-items': 'center', 'justify-content': 'start' }}>
+          {bubbleProps.theme.chatWindow.popupMessage}
+        </div>
+      )}
       <BubbleButton {...bubbleProps.theme?.button} toggleBot={toggleBot} isBotOpened={isBotOpened()} />
       <div
         part="bot"
